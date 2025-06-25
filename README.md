@@ -92,9 +92,35 @@ During the parallel prefix scan, whenever the norm of any vector in an interim s
 If you're interested in understanding the intuition behind our selective-resetting method, Appendix C of our paper has an informal explanation of it with step-by-step examples.
 
 
+## Extending to Non-Diagonal Linear Recurrences with Biases
+
+We can apply our sample implementation to recurrences of the form $x_t = A_t x_{t-1} + b_t$, given initial condition $x_0 \in \mathbb{R}^d$, by reformulating the recurrence as a sequence of matrix products $\tilde{x}_t = \tilde{A}_t \tilde{x}_{t-1}$:
+
+![linear recurrence with biases](linear_recurrence_with_biases.png)
+
+and applying `ParallelizedLeftToRightRecurrenceWithSelectiveResetting` over the chain of reformulated matrices. Our code computes the recurrence left-to-right, as is typical in PyTorch applications, so we would actually implement $\tilde{x}^T_t = \tilde{x}^T_0 \tilde{A}^T_1 \tilde{A}^T_2 \dots \tilde{A}^T_t$:
+
+```python
+parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelectiveResetting(
+    d=d,
+    select_func=my_select_func,
+    reset_func=my_reset_func,
+)
+
+tilde_x = tilde_x_0 @ parallelized_recurrence_with_sr(tilde_A)  # init state by compound mats
+```
+
+where `tilde_x_0` is the reformulated initial condition, `tilde_A` is the sequence of reformulated transition matrices, and `my_select_func` and `my_reset_func` are functions you get to define however you want.
+
+
+## Using as a Component of PyTorch Models
+
+`ParallelizedLeftToRightRecurrenceWithSelectiveResetting` is a standard PyTorch `nn.Module`, so you can use it as a component of any PyTorch model, trainable with conventional techniques via stochastic gradient descent.
+
+
 ## Other Implementations
 
-Our algorithm for parallel estimation of the spectrum of Lyapunov exponents of a dynamical system applies our selective-resetting method to prevent vector states from becoming colinear as we apply a parallel prefix scan to Jacobian matrix values, over generalized orders of magnitude (GOOMs), represented as complex tensors. Our implementation of the parallel algorithm for estimation of Lyapunov exponents is at [https://github.com/glassroom/parallel_lyapunov_exponents](https://github.com/glassroom/parallel_lyapunov_exponents).
+Our algorithm for parallel estimation of the spectrum of Lyapunov exponents of dynamical systems applies our selective-resetting method to prevent vector states from becoming colinear as we apply a parallel prefix scan to a sequence of Jacobian matrix values, over generalized orders of magnitude (GOOMs), represented as complex tensors. Our reference implementation of the parallel algorithm for estimation of Lyapunov exponents is at [https://github.com/glassroom/parallel_lyapunov_exponents](https://github.com/glassroom/parallel_lyapunov_exponents).
 
 
 ## Citing
