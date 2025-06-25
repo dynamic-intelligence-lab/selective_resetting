@@ -1,0 +1,4 @@
+numpy
+torch
+matplotlib
+git+https://github.com/glassroom/torch_parallel_scan
