@@ -94,7 +94,7 @@ If you're interested in understanding the intuition behind our selective-resetti
 
 ## Extending to Non-Diagonal Linear Recurrences with Biases
 
-We can apply our sample implementation to recurrences of the form $x_t = A_t x_{t-1} + b_t$, given initial condition $x_0 \in \mathbb{R}^d$, by reformulating the recurrence as a sequence of matrix products $\tilde{x}_t = \tilde{A}_t \tilde{x}_{t-1}$:
+We can apply our sample implementation to recurrences of the form $x_t = A_t x_{t-1} + b_t$, given initial condition $x_0 \in \mathbb{R}^d$, by reformulating the recurrence as a sequence of matrix products,
 
 ![linear recurrence with biases](linear_recurrence_with_biases.png)
 
