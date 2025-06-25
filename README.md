@@ -1,6 +1,6 @@
 # selective_resetting
 
-Reference implementation of the selective-resetting method for parallel prefix scans proposed in "Generalized Orders of Magnitude for Scalable, Parallel, High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025). Our method enables you conditionally to reset interim states at any step in a linear recurrence, however you want to reset them, _as you compute all states in parallel via a prefix scan_.
+Reference implementation of the selective-resetting method for parallel prefix scans proposed in "Generalized Orders of Magnitude for Scalable, Parallel, High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025), for Pytorch. Our method enables you conditionally to reset interim states at any step in a linear recurrence, however you want to reset them, _as you compute all states in parallel via a prefix scan_.
 
 
 ## Installing
@@ -14,9 +14,9 @@ Reference implementation of the selective-resetting method for parallel prefix s
 
 ## Sample Use
 
-In principle, we can apply our selective-resetting method to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a sample implementation of our method for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This sample implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
+Our selective-resetting method applies to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a reference implementation for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
 
-We will walk through an example that shows how to apply our method. Fire up a Python notebook and execute the following code, which computes a non-diagonal linear recurrence, $S_t = A_t S_{t-1}$, with $S_0 = I$:
+We will walk through an example to show how to use our sample implementation. Launch a Python interpreter (_e.g._, in a notebook), and execute the following code to compute a non-diagonal linear recurrence $S_t = A_t S_{t-1}$, $S_0 = I$, in parallel, with a prefix scan:
 
 ```python
 import torch
