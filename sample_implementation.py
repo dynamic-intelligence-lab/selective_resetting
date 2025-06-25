@@ -21,8 +21,10 @@ class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
     
         A1 @ A2 (d x d), B1 @ A2 + B2 (d x d), on the right,
 
-    broadcasting over preceding dimensions, if any. Appendix C of the paper
-    has an informal explanation of the method with step-by-step examples.
+    broadcasting over preceding dimensions, if any.
+
+    Please see Appendix C of the paper for an informal explanation of the
+    intuition behind selective resetting, with step-by-step examples.
 
     Args:
         d: size of square matrices, each d x d.
