@@ -46,19 +46,20 @@ we obtain a plot similar to this one (it won't be the same because the matrices 
 
 Let's say we don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 10, to keep things simple. Unfortunately, we can't do that in parallel, can we?
 
-*Actually, yes, we can*. Our selective-resetting method allows us to do exactly that, _in parallel, as we compute all states via a prefix scan_:
+*Actually, yes, we can*. Our selective-resetting method allows us to reset interim states that meet a selection criteria we specify, with a reset function we specify, _in parallel, as we compute all states via a prefix scan_:
 
 ```python
-from sample_implementation import LeftToRightRecurrenceWithSelectiveReseting
+from sample_implementation import ParallelizedLeftToRightRecurrenceWithSelectiveResetting
 
 # Define non-diagonal linear recurrence with selective resetting:
-recurrence_with_sr = LeftToRightRecurrenceWithSelectiveResetting(
+parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelectiveResetting(
     d=d,
     select_func=lambda mats: (mats.norm(dim=-1) > 10).any(dim=-1)[..., None, None],
     reset_func=lambda mats: F.normalize(mats, dim=-1),
 )
 
-S_with_resets = recurrence_with_sr(A)
+# Compute recurrence with selective resets via parallel prefix scan:
+S_with_resets = parallelized_recurrence_with_sr(A)
 ```
 
 If we compare the max vector norms of `S_without_resets` and `S_with_resets` with the following code,
