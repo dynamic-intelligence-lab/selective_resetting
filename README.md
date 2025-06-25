@@ -16,7 +16,7 @@ Reference implementation of the selective-resetting method for parallel prefix s
 
 Our selective-resetting method applies to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a reference implementation for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
 
-We will walk through an example to show how to use our sample implementation. Launch a Python interpreter (_e.g._, in a notebook), and execute the following code to compute a non-diagonal linear recurrence $X_t = A_t X_{t-1}$, $X_0 = I$, in parallel, with a prefix scan:
+We will walk through an example to show how to use our sample implementation. Launch a Python interpreter (_e.g._, in a notebook), and execute the following code to compute a non-diagonal linear recurrence $X_t = A_t X_{t-1}$, with initial state $X_0 = I$, in parallel, via a prefix scan:
 
 ```python
 import torch
