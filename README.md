@@ -115,7 +115,7 @@ where `my_select_func` and `my_reset_func` are functions you must define, and `t
 
 ## Using as a Component of PyTorch Models
 
-`ParallelizedLeftToRightRecurrenceWithSelectiveResetting` is a standard PyTorch `nn.Module`, so you can use it as a component of any PyTorch model, trainable with conventional techniques via stochastic gradient descent.
+`ParallelizedLeftToRightRecurrenceWithSelectiveResetting` is a standard PyTorch `nn.Module`, so you can use it as a component of any PyTorch model, trainable conventional techniques via SGD.
 
 
 ## Other Implementations
