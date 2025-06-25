@@ -72,7 +72,7 @@ fig, axes = plt.subplots(ncols=2, sharey=True, layout='constrained', figsize=(10
 fig.suptitle("Max L-2 Norm of Each State's Trailing Dimension")
 
 axis = axes[0]
-axis.set(title="Without Selective Resetting", yscale='log', ylim=(1, 10 ** S_without_resets.max().log10().ceil().item()))
+axis.set(title="Without Selective Resetting", yscale='log')
 axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
 axis.grid(axis='y')
 
