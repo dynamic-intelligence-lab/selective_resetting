@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch_parallel_scan as tps
 
 
 class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
@@ -84,3 +85,42 @@ class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
             A2_atop_B2,                                                   # [..., n, d + d, d]
         )                                                                 # [..., n, d + d, d]
         return updated_A2_atop_B2
+
+
+class LeftToRightRecurrenceWithSelectiveResetting(nn.Module):
+    """
+    Computes a left-to-right non-diagonal linear recurrence with selective
+    resets, in parallel, via a prefix scan, applying the selective-resetting
+    method proposed in "Generalized Orders of Magnitude for Scalable, Parallel,
+    High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025). Appendix C
+    of the paper informally explains the method with step-by-step examples.
+
+    Args:
+        d: size of square matrices, each d x d.
+        select_func: function for selecting matrix states that will be reset.
+        reset_func: function that resets matrix states.
+
+    Inputs:
+        A: float tensor of shape [..., d, d] with transition matrices.
+
+    Output:
+        S: float tensor of shape [..., d, d] with compound state matrices,
+            some of which may have been selectively reset.
+    """
+    def __init__(self, d, select_func, reset_func):
+        super().__init__()
+        self.d = d
+        self.sr_transform = UpdateOnRightWithSelectiveResetOnLeft(
+            d=d, select_func=select_func, reset_func=reset_func)
+
+    def forward(self, A):
+        # Add a bias initialized with zeros below each transition matrix:
+        A_atop_B = F.pad(A, (0, 0,  0, self.d), value=0)  # shape is [..., n, d + d, d]
+
+        # Apply parallel prefix scan with selective-resetting transform:
+        cumul_A_atop_B = tps.prefix_scan(A_atop_B, self.sr_transform, dim=-3)
+
+        # Add cumulative transition matrices and biases (possibly reset)
+        S = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
+
+        return S
