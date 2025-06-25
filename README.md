@@ -36,7 +36,7 @@ The random vectors in each transition matrix of `A` tend to have L-2 norm greate
 fig, axis = plt.subplots(layout='constrained', figsize=(5, 3.5))
 axis.set_title("Max L-2 Norm of Each State's Trailing Dimension")
 axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
+axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 
@@ -71,13 +71,13 @@ fig.suptitle("Max L-2 Norm of Each State's Trailing Dimension")
 axis = axes[0]
 axis.set_title("Without Selective Resetting")
 axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
+axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 
 axis = axes[1]
 axis.set_title("With Selective Resetting")
 axis.bar(range(n), S_with_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
+axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 
