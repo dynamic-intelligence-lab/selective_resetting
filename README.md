@@ -85,6 +85,8 @@ we obtain a plot similar to this one (it won't be the same because the matrices 
 
 ![comparison](comparison.png)
 
+During the parallel prefix scan, whenever the norm of any vector in an interim state exceeds 10, the vectors in that state are reset to unit norm. Interim states can reach a max vector norm just below 10 without being reset, and they may be multiplied with other interim states that also reach max vector norm just below 10, so the final compounded states may have a max vector norm that exceeds 10.
+
 If you're interested in understanding the intuition behind our selective-resetting method, Appendix C of our paper has an informal explanation of it with step-by-step examples.
 
 
