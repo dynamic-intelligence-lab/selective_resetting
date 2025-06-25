@@ -44,7 +44,7 @@ axis.grid(axis='y')
 
 we obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
 
-![states without resetting](states_without_resetting.png)
+![states without resetting](assets/states_without_resetting.png)
 
 Let's say we don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 10, to keep things simple. Unfortunately, we can't do that in parallel, can we?
 
@@ -85,7 +85,7 @@ axis.grid(axis='y')
 
 we obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
 
-![comparison](comparison.png)
+![comparison](assets/comparison.png)
 
 During the parallel prefix scan, whenever the norm of any vector in an interim state exceeds 10, the vectors in that state are reset to unit norm. Interim states can reach a max vector norm just below 10 without being reset, and they may be multiplied with other interim states that also reach a max vector norm just below 10, so some final compounded states may have a max vector norm that exceeds 10.
 
@@ -96,7 +96,7 @@ If you're interested in understanding the intuition behind our selective-resetti
 
 We can apply our sample implementation to recurrences of the form $x_t = A_t x_{t-1} + b_t$, given initial condition $x_0 \in \mathbb{R}^d$, by reformulating the recurrence as a sequence of matrix products,
 
-![linear recurrence with biases](linear_recurrence_with_biases.png)
+![linear recurrence with biases](assets/linear_recurrence_with_biases.png)
 
 and applying `ParallelizedLeftToRightRecurrenceWithSelectiveResetting` over the chain of reformulated matrices. Our code computes the recurrence left-to-right, as is typical in PyTorch applications, so we would actually implement $\tilde{x}^T_t = \tilde{x}^T_0 \tilde{A}^T_1 \tilde{A}^T_2 \dots \tilde{A}^T_t$:
 
