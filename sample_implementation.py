@@ -29,7 +29,11 @@ class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
     Args:
         d: size of square matrices, each d x d.
         select_func: function for selecting matrix states that will be reset.
-        reset_func: function that resets matrix states.
+            The function must accept a float tensor of shape [..., d, d] as
+            input, and return a bool tensor of shape [..., 1, 1] as output.
+        reset_func: function that resets matrix states. The function must
+            accept a float tensor of shape [..., d, d] as input, and return
+            a float tensor of shape [..., 1, 1], with reset states, as output.
 
     Inputs:
         A1_atop_B1: float tensor of shape [..., 1, d + d, d], with each A1
@@ -100,7 +104,11 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
     Args:
         d: size of square matrices, each d x d.
         select_func: function for selecting matrix states that will be reset.
-        reset_func: function that resets matrix states.
+            The function must accept a float tensor of shape [..., d, d] as
+            input, and return a bool tensor of shape [..., 1, 1] as output.
+        reset_func: function that resets matrix states. The function must
+            accept a float tensor of shape [..., d, d] as input, and return
+            a float tensor of shape [..., 1, 1], with reset states, as output.
 
     Inputs:
         A: float tensor of shape [..., n, d, d] with n left-to-right transition
