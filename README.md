@@ -34,8 +34,9 @@ The random vectors in each transition matrix of `A` tend to have L-2 norm greate
 
 ```python
 fig, axis = plt.subplots(layout='constrained', figsize=(5, 3.5))
-axis.set(title="Max L-2 Norm of Each State's Trailing Dimension", yscale='log')
+axis.set_title("Max L-2 Norm of Each State's Trailing Dimension")
 axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 
@@ -43,26 +44,21 @@ we obtain a plot similar to this one (it won't be the same because the matrices 
 
 ![states without resetting](states_without_resetting.png)
 
-Let's say we don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 5, to keep things simple. Unfortunately, we can't do that in parallel, can we? *Actually, yes, we can*. Our selective-resetting method allows us to do exactly that, _in parallel, as we compute all states via a prefix scan_:
+Let's say we don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 10, to keep things simple. Unfortunately, we can't do that in parallel, can we?
+
+*Actually, yes, we can*. Our selective-resetting method allows us to do exactly that, _in parallel, as we compute all states via a prefix scan_:
 
 ```python
-import torch.nn.functional as F
-from sample_implementation import UpdateOnRightWithSelectiveResetOnLeft
+from sample_implementation import LeftToRightRecurrenceWithSelectiveReseting
 
-# Define selective-resetting transformation:
-sr_transform = UpdateOnRightWithSelectiveResetOnLeft(
+# Define non-diagonal linear recurrence with selective resetting:
+recurrence_with_sr = LeftToRightRecurrenceWithSelectiveResetting(
     d=d,
-    select_func=lambda mats: (mats.norm(dim=-1) > 5).any(dim=-1)[..., None, None],
+    select_func=lambda mats: (mats.norm(dim=-1) > 10).any(dim=-1)[..., None, None],
     reset_func=lambda mats: F.normalize(mats, dim=-1),
 )
 
-# Add a bias initialized with zeros below each transition matrix:
-A_atop_B = F.pad(A, (0,0, 0,d), value=0)  # shape is [n, d + d, d]
-
-# Compute a parallel prefix scan that applies the selective-resetting transform:
-cumul_A_atop_B = tps.prefix_scan(A_atop_B, sr_transform, dim=-3)  # cumul A's atop B's
-
-S_with_resets = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
+S_with_resets = recurrence_with_sr(A)
 ```
 
 If we compare the max vector norms of `S_without_resets` and `S_with_resets` with the following code,
@@ -72,13 +68,15 @@ fig, axes = plt.subplots(ncols=2, sharey=True, layout='constrained', figsize=(10
 fig.suptitle("Max L-2 Norm of Each State's Trailing Dimension")
 
 axis = axes[0]
-axis.set(title="Without Selective Resetting", yscale='log')
+axis.set_title("Without Selective Resetting")
 axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 
 axis = axes[1]
-axis.set(title="With Selective Resetting", yscale='log')
+axis.set_title("With Selective Resetting")
 axis.bar(range(n), S_with_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1, S_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 
