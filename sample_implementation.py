@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch_parallel_scan as tps
 
 
-class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
+class _UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
     """
     Sample implementation of the selective-resetting method for parallel prefix
     scans proposed in "Generalized Orders of Magnitude for Scalable, Parallel,
@@ -98,8 +98,10 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
     Computes a left-to-right non-diagonal linear recurrence with selective
     resets, in parallel, via a prefix scan, applying the selective-resetting
     method proposed in "Generalized Orders of Magnitude for Scalable, Parallel,
-    High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025). Appendix C
-    of the paper informally explains the method with step-by-step examples.
+    High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025).
+
+    Please see Appendix C of the paper for an informal explanation of the
+    intuition behind selective resetting, with step-by-step examples.
 
     Args:
         d: size of square matrices, each d x d.
@@ -121,7 +123,7 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
     def __init__(self, d, select_func, reset_func):
         super().__init__()
         self.d = d
-        self.sr_transform = UpdateOnRightWithSelectiveResetOnLeft(
+        self.sr_transform = _UpdateOnRightWithSelectiveResetOnLeft(
             d=d, select_func=select_func, reset_func=reset_func)
 
     def forward(self, A):
