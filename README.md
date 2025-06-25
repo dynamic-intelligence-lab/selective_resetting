@@ -14,9 +14,9 @@ Reference implementation of the selective-resetting method for parallel prefix s
 
 ## Sample Use
 
-In principle, you can apply our selective-resetting method to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a sample implementation of our method for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This sample implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
+In principle, we can apply our selective-resetting method to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a sample implementation of our method for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This sample implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
 
-We will walk through an example so you can see how to apply our method. Fire up a Python notebook and execute the following code, which computes a non-diagonal linear recurrence, $S_t = A_t S_{t-1}$, with $S_0 = I$:
+We will walk through an example that shows how to apply our method. Fire up a Python notebook and execute the following code, which computes a non-diagonal linear recurrence, $S_t = A_t S_{t-1}$, with $S_0 = I$:
 
 ```python
 import torch
@@ -30,7 +30,7 @@ A = torch.randn(n, d, d)
 S_without_resets = tps.prefix_scan(A, torch.matmul, dim=-3)
 ```
 
-The random vectors in each transition matrix of `A` tend to have L-2 norm greater than 1, so the L-2 norm of state vectors in `S_without_resets` will tend to increase with each additional matrix multiplication. If you plot the max vector norm within each state matrix in `S_without_resets`, using the following code,
+The random vectors in each transition matrix of `A` tend to have L-2 norm greater than 1, so the L-2 norm of state vectors in `S_without_resets` will tend to increase with each additional matrix multiplication. If we plot the max vector norm within each state matrix in `S_without_resets`, using the following code,
 
 ```python
 fig, axis = plt.subplots(layout='constrained', figsize=(5, 3.5))
@@ -39,11 +39,11 @@ axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
 axis.grid(axis='y')
 ```
 
-you will obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
+we obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
 
 ![states without resetting](states_without_resetting.png)
 
-Let's say you don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 5, to keep things simple. Our selective-resetting method allows you to do exactly that -- _in parallel, as you compute all states via a prefix scan_:
+Let's say we don't want the L-2 norms of state vectors to spiral out of control. The solution is to rescale state vectors whenever their L-2 norm starts getting too large -- say, whenever the L-2 norm exceeds 5, to keep things simple. Unfortunately, we can't do that in parallel, can we? *Actually, yes, we can*. Our selective-resetting method allows us to do exactly that, _in parallel, as we compute all states via a prefix scan_:
 
 ```python
 import torch.nn.functional as F
@@ -65,7 +65,7 @@ cumul_A_atop_B = tps.prefix_scan(A_atop_B, sr_transform, dim=-3)  # cumul A's at
 S_with_resets = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
 ```
 
-If you compare the max vector norms of `S_without_resets` and `S_with_resets`,
+If we compare the max vector norms of `S_without_resets` and `S_with_resets` with the following code,
 
 ```python
 fig, axes = plt.subplots(ncols=2, sharey=True, layout='constrained', figsize=(10, 3.5))
@@ -82,7 +82,7 @@ axis.bar(range(n), S_with_resets.norm(dim=-1).max(dim=-1).values)
 axis.grid(axis='y')
 ```
 
-you will obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
+we obtain a plot similar to this one (it won't be the same because the matrices in `A` are random):
 
 ![comparison](comparison.png)
 
