@@ -16,7 +16,7 @@ Reference implementation of the selective-resetting method for parallel prefix s
 
 Our selective-resetting method applies to _any_ linear recurrence (diagonal or not, time-variant or not, over $\mathbb{R}$ or another field) computed in parallel via a prefix scan. This repository provides a reference implementation for only one case: non-diagonal linear recurrences over $\mathbb{R}$. This implementation, for PyTorch, is in a single file: [sample_implementation.py](sample_implementation.py).
 
-We will walk through an example to show how to use our sample implementation. Launch a Python interpreter (_e.g._, in a notebook), and execute the following code to compute a non-diagonal linear recurrence $S_t = A_t S_{t-1}$, $S_0 = I$, in parallel, with a prefix scan:
+We will walk through an example to show how to use our sample implementation. Launch a Python interpreter (_e.g._, in a notebook), and execute the following code to compute a non-diagonal linear recurrence $X_t = A_t X_{t-1}$, $X_0 = I$, in parallel, with a prefix scan:
 
 ```python
 import torch
@@ -26,17 +26,19 @@ import torch_parallel_scan as tps
 n, d = (50, 3)
 A = torch.randn(n, d, d)
 
-# Compute linear recurrence S in parallel via a prefix scan:
-S_without_resets = tps.prefix_scan(A, torch.matmul, dim=-3)
+# Compute linear recurrence X in parallel via a prefix scan:
+X_without_resets = tps.prefix_scan(A, torch.matmul, dim=-3)
 ```
 
-The random vectors in each transition matrix of `A` tend to have L-2 norm greater than 1, so the L-2 norm of state vectors in `S_without_resets` will tend to increase with each additional matrix multiplication. If we plot the max vector norm within each state matrix in `S_without_resets`, using the following code,
+The random vectors in each transition matrix of `A` tend to have L-2 norm greater than 1, so the L-2 norm of state vectors in `X_without_resets` will tend to increase with each additional matrix multiplication. If we plot the max vector norm within each state matrix in `X_without_resets`, using the following code,
 
 ```python
+import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots(layout='constrained', figsize=(5, 3.5))
 axis.set_title("Max L-2 Norm of Each State's Trailing Dimension")
-axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
+axis.bar(range(n), X_without_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1e-1, X_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 
@@ -59,10 +61,10 @@ parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelective
 )
 
 # Compute recurrence with selective resets via parallel prefix scan:
-S_with_resets = parallelized_recurrence_with_sr(A)
+X_with_resets = parallelized_recurrence_with_sr(A)
 ```
 
-If we compare the max vector norms of `S_without_resets` and `S_with_resets` with the following code,
+If we compare the max vector norms of `X_without_resets` and `X_with_resets` with the following code,
 
 ```python
 fig, axes = plt.subplots(ncols=2, sharey=True, layout='constrained', figsize=(10, 3.5))
@@ -70,14 +72,14 @@ fig.suptitle("Max L-2 Norm of Each State's Trailing Dimension")
 
 axis = axes[0]
 axis.set_title("Without Selective Resetting")
-axis.bar(range(n), S_without_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
+axis.bar(range(n), X_without_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1e-1, X_without_resets.max() * 10))
 axis.grid(axis='y')
 
 axis = axes[1]
 axis.set_title("With Selective Resetting")
-axis.bar(range(n), S_with_resets.norm(dim=-1).max(dim=-1).values)
-axis.set(yscale='log', ylim=(1e-1, S_without_resets.max() * 10))
+axis.bar(range(n), X_with_resets.norm(dim=-1).max(dim=-1).values)
+axis.set(yscale='log', ylim=(1e-1, X_without_resets.max() * 10))
 axis.grid(axis='y')
 ```
 

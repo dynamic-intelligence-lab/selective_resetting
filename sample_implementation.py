@@ -101,10 +101,11 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
         reset_func: function that resets matrix states.
 
     Inputs:
-        A: float tensor of shape [..., d, d] with transition matrices.
+        A: float tensor of shape [..., n, d, d] with n left-to-right transition
+            matrices, optionally with initial state in the first position.
 
     Output:
-        S: float tensor of shape [..., d, d] with compound state matrices,
+        X: float tensor of shape [..., n, d, d] with n compound state matrices,
             some of which may have been selectively reset.
     """
     def __init__(self, d, select_func, reset_func):
@@ -121,6 +122,6 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
         cumul_A_atop_B = tps.prefix_scan(A_atop_B, self.sr_transform, dim=-3)
 
         # Add cumulative transition matrices and biases (possibly reset)
-        S = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
+        X = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
 
-        return S
+        return X
