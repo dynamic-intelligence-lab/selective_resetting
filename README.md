@@ -98,7 +98,7 @@ We can apply our sample implementation to recurrences of the form $x_t = A_t x_{
 
 ![linear recurrence with biases](assets/linear_recurrence_with_biases.png)
 
-and applying `ParallelizedLeftToRightRecurrenceWithSelectiveResetting` over the chain of reformulated matrices. Our code computes the recurrence left-to-right, as is typical in PyTorch applications, so we would actually implement $\tilde{x}^T_t = \tilde{x}^T_0 \tilde{A}^T_1 \tilde{A}^T_2 \dots \tilde{A}^T_t$:
+and applying `ParallelizedLeftToRightRecurrenceWithSelectiveResetting` over the chain of reformulated matrices. Our code computes the recurrence left-to-right, as is typical in PyTorch applications, so we would actually implement $\tilde{x}^T_t = \tilde{x}^T_0 \tilde{A}^T_1 \tilde{A}^T_2 \dots \tilde{A}^T_t$, for example, with the following code:
 
 ```python
 parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelectiveResetting(
@@ -110,7 +110,7 @@ parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelective
 tilde_x = tilde_x_0 @ parallelized_recurrence_with_sr(tilde_A)  # init state by compound mats
 ```
 
-where `tilde_x_0` is the reformulated initial condition, `tilde_A` is the sequence of reformulated transition matrices, and `my_select_func` and `my_reset_func` are functions you get to define however you want.
+where `my_select_func` and `my_reset_func` are functions you must define, and `tilde_x_0` and `tilde_A` are the reformulated initial condition and transition matrices, respectively, which you must compute in advance.
 
 
 ## Using as a Component of PyTorch Models
