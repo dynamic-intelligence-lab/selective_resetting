@@ -10,16 +10,18 @@ class _UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
     """
     Sample implementation of the selective-resetting method for parallel prefix
     scans proposed in "Generalized Orders of Magnitude for Scalable, Parallel,
-    High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025). Given
-    
-        A1 (d x d), B1 (d x d) on the left, and
-        A2 (d x d), B2 (d x d) on the right,
+    High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025).
 
-    this module applies a specified select function to all A1 matrices on the
-    left, to determine which A1 matrices and B1 biases, if any, should be reset
-    by a specified reset function, and then computes updated states as
+    Given:
     
-        A1 @ A2 (d x d), B1 @ A2 + B2 (d x d), on the right,
+        matrices A1 and B1, on the left, and
+        matrices A2 and B2, on the right,
+
+    this module applies a specified select function to A1, to determine if its
+    value should be reset by a specified reset function, and saved on B1, but
+    only if B1 is still all-zeros, and then computes updated states as:
+    
+        matrices [A1 @ A2] and [B1 @ A2 + B2], on the right,
 
     broadcasting over preceding dimensions, if any.
 
@@ -42,7 +44,7 @@ class _UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
             (d x d) stacked atop its corresponding B2 (d x d), on the right.
 
     Output:
-        updated_A2_atop_B2: float tensor of shape [..., d + d, d], with each
+        updated_A2_atop_B2: float tensor of shape [..., n, d + d, d], with each
         A1 @ A2 (d x d) stacked atop its corresponding B1 @ A2 + B2 (d x d).
     """
     def __init__(self, d, select_func, reset_func):
@@ -133,7 +135,7 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
         # Apply parallel prefix scan with selective-resetting transform:
         cumul_A_atop_B = tps.prefix_scan(A_atop_B, self.sr_transform, dim=-3)
 
-        # Add cumulative transition matrices and biases (possibly reset)
+        # Add cumulative transition matrices and biases (possibly reset):
         X = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
 
         return X
