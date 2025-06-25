@@ -86,7 +86,7 @@ we obtain a plot similar to this one (it won't be the same because the matrices 
 
 ![comparison](comparison.png)
 
-Appendix C of our paper has an informal explanation of our selective-resetting method with step-by-step examples.
+If you're interested in understanding the intuition behind our selective-resetting method, Appendix C of our paper has an informal explanation of it with step-by-step examples.
 
 
 ## Other Implementations
