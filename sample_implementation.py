@@ -87,7 +87,7 @@ class UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
         return updated_A2_atop_B2
 
 
-class LeftToRightRecurrenceWithSelectiveResetting(nn.Module):
+class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
     """
     Computes a left-to-right non-diagonal linear recurrence with selective
     resets, in parallel, via a prefix scan, applying the selective-resetting
