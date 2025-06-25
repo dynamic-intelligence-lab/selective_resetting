@@ -1,6 +1,6 @@
 # selective_resetting
 
-Reference implementation of the selective-resetting method for parallel prefix scans proposed in "Generalized Orders of Magnitude for Scalable, Parallel, High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025), for Pytorch. Our method enables you conditionally to reset interim states at any step in a linear recurrence, however you want to reset them, _as you compute all states in parallel via a prefix scan_.
+Reference implementation of our method for selectively resetting interim states at any step in a linear recurrence, as we compute it in parallel via a prefix scan.
 
 
 ## Installing
