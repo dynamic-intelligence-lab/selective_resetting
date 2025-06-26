@@ -1,6 +1,6 @@
 # selective_resetting
 
-Reference implementation of our method for selectively resetting interim states at any step in a linear recurrence, as we compute all states in the linear recurrence in parallel via a prefix scan.
+Reference implementation of our method for selectively resetting interim states at any step in a linear recurrence, as we compute all states in the linear recurrence in parallel via a prefix scan, for PyTorch.
 
 
 ## Installing
