@@ -13,14 +13,14 @@ class _UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
     High-Dynamic-Range Computation" (Heinsen and Kozachkov, 2025).
 
     Given:
-    
+
         matrices A1 and B1, on the left, and
         matrices A2 and B2, on the right,
 
     this module applies a specified select function to A1, to determine if its
     value should be reset by a specified reset function, and saved on B1, but
     only if B1 is still all-zeros, and then computes updated states as:
-    
+
         matrices [A1 @ A2] and [B1 @ A2 + B2], on the right,
 
     broadcasting over preceding dimensions, if any.
@@ -76,8 +76,8 @@ class _UpdateOnRightWithSelectiveResetOnLeft(nn.Module):
             subset_of_A1 = A1[idx].view(*subset_szs)                      # [..., <n in subset>, 1, d, d]
             new_values = self.reset_func(subset_of_A1)                    # [..., <n in subset>, 1, d, d]
             zeros_atop_new = F.pad(new_values, (0,0, d,0), value=0)       # [..., <n in subset>, 1, d + d, d]
-            idx = should_reset_on_left.expand_as(A1_atop_B1)              # [...., 1, d + d, d]
-            A1_atop_B1[idx] = zeros_atop_new.view(A1_atop_B1[idx].shape)  # [..., <n in subset>, 1, d + d, d]
+            idx = should_reset_on_left.expand_as(A1_atop_B1)              # [..., 1, d + d, d]
+            A1_atop_B1[idx] = zeros_atop_new.view(A1_atop_B1[idx].shape)  # [..., 1, d + d, d]
 
         # Compute A1 @ A2, stacked atop B1 @ A2 + B2:
         preceding_szs = A1_atop_B1.shape[:-2]                             # sizes for broadcasting
