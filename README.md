@@ -107,7 +107,8 @@ parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelective
     reset_func=my_reset_func,
 )
 
-tilde_x = tilde_x_0 @ parallelized_recurrence_with_sr(tilde_A)  # init state by compound mats
+cumul_tilde_A_with_resets = parallelized_recurrence_with_sr(tilde_A)
+tilde_x = torch.matmul(tilde_x_0, cumul_tilde_A_with_resets)
 ```
 
 where `my_select_func` and `my_reset_func` are functions you must define, and `tilde_x_0` and `tilde_A` are the reformulated initial condition and transition matrices, respectively, which you must compute in advance.
