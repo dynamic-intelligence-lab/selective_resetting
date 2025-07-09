@@ -136,6 +136,6 @@ class ParallelizedLeftToRightRecurrenceWithSelectiveResetting(nn.Module):
         cumul_A_atop_B = tps.prefix_scan(A_atop_B, self.sr_transform, dim=-3)
 
         # Add cumulative transition matrices and biases (possibly reset):
-        X = cumul_A_atop_B[..., :d, :] + cumul_A_atop_B[..., d:, :]
+        X = cumul_A_atop_B[..., :self.d, :] + cumul_A_atop_B[..., self.d:, :]
 
         return X

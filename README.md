@@ -57,7 +57,7 @@ from sample_implementation import ParallelizedLeftToRightRecurrenceWithSelective
 parallelized_recurrence_with_sr = ParallelizedLeftToRightRecurrenceWithSelectiveResetting(
     d=d,
     select_func=lambda mats: (mats.norm(dim=-1) > 10).any(dim=-1)[..., None, None],
-    reset_func=lambda mats: F.normalize(mats, dim=-1),
+    reset_func=lambda mats: torch.nn.functional.normalize(mats, dim=-1),
 )
 
 # Compute recurrence with selective resets via parallel prefix scan:
