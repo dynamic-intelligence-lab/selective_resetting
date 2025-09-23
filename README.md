@@ -126,8 +126,6 @@ Our algorithm for parallel estimation of the spectrum of Lyapunov exponents of d
 
 ## Citing
 
-TODO: Update citation.
-
 ```
 @article{
 heinsen2025generalized,
