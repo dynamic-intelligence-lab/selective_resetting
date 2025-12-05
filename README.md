@@ -121,7 +121,7 @@ where `my_select_func` and `my_reset_func` are functions you must define, and `t
 
 ## Other Implementations
 
-Our algorithm for parallel estimation of the spectrum of Lyapunov exponents of dynamical systems applies our selective-resetting method to prevent vector states from becoming colinear as we apply a parallel prefix scan to a sequence of Jacobian matrix values, over generalized orders of magnitude (GOOMs), represented as complex tensors. Our reference implementation of the parallel algorithm for estimation of Lyapunov exponents is at [https://github.com/glassroom/parallel_lyapunov_exponents](https://github.com/glassroom/parallel_lyapunov_exponents).
+Our algorithm for parallel estimation of the spectrum of Lyapunov exponents of dynamical systems applies our selective-resetting method to prevent vector states from becoming colinear as we apply a parallel prefix scan to a sequence of Jacobian matrix values, over generalized orders of magnitude (GOOMs), represented as complex tensors. Our reference implementation of the parallel algorithm for estimation of Lyapunov exponents is at [https://github.com/dynamic-intelligence-lab/parallel_lyapunov_exponents](https://github.com/dynamic-intelligence-lab/parallel_lyapunov_exponents).
 
 
 ## Citing
